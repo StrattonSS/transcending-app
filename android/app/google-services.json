@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "312753390932",
+    "project_id": "transcending-app",
+    "storage_bucket": "transcending-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312753390932:android:88ca378d34191988c7b4c1",
+        "android_client_info": {
+          "package_name": "com.example.transcending_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUKUdAGtkVe9GZKFEe-gsUXcuOSWogTAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
