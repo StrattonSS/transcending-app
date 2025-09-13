@@ -34,157 +34,177 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text("Transcending"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => FirebaseAuth.instance.signOut(),
-          ),
-          // Future: Show admin button here conditionally
-        ],
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0x40000000), // Black
-              Color(0x40784F17), // Brown
-              Color(0x405BCEFA), // Trans Blue
-              Color(0x40F5A9B8), // Trans Pink
-              Color(0x40FFFFFF), // White
-              Color(0x40FF0000), // Red
-              Color(0x40FF8C00), // Orange
-              Color(0x40FFFF00), // Yellow
-              Color(0x40008000), // Green
-              Color(0x400000FF), // Blue
-              Color(0x408B00FF), // Purple
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // 🔍 Search Bar
-                TextField(
-                  decoration: const InputDecoration(
-                    labelText: 'Search resources...',
-                    prefixIcon: Icon(Icons.search),
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
-                  onChanged: (value) {
-                    setState(() => _searchText = value.toLowerCase());
-                  },
-                ),
-                const SizedBox(height: 16),
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Slight top breathing room (tiny)
+              const SizedBox(height: 5),
 
-                // ⬇️ State Dropdown
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Select a state',
-                    fillColor: Colors.white,
-                    filled: true,
+              // 🌈 LOGO/TITLE — crop extra transparent space at the bottom
+              // Align(heightFactor: 0.58) keeps the TOP 58% of the image (cropping the rest).
+              // Tweak 0.58 → 0.62 or 0.54 if you want more/less crop.
+              ClipRect(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  heightFactor: 0.30,
+                  child: Image.asset(
+                    'assets/images/name.png',
+                    width: double.infinity,
+                    fit: BoxFit.contain,
                   ),
-                  value: _selectedState,
-                  items: _states.map((state) {
-                    return DropdownMenuItem(value: state, child: Text(state));
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedState = value;
-                      _selectedCity = null;
-                    });
-                  },
                 ),
-                const SizedBox(height: 16),
+              ),
 
-                // ⬇️ City Dropdown
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Select a city',
-                    fillColor: Colors.white,
-                    filled: true,
+              // 🎨 Splash art directly under logo, nudged up a bit to close any micro-gap
+              Transform.translate(
+                offset: const Offset(0, -6), // pull upward slightly
+                child: Opacity(
+                  opacity: 0.70,
+                  child: Image.asset(
+                    'assets/images/bird.png',
+                    width: double.infinity,
+                    fit: BoxFit.fitWidth,
+                    height: 360,
                   ),
-                  value: _selectedCity,
-                  items: (_cities[_selectedState] ?? []).map((city) {
-                    return DropdownMenuItem(value: city, child: Text(city));
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedCity = value);
-                  },
                 ),
-                const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
 
-                // ⬇️ Category Dropdown
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Select a category',
-                    fillColor: Colors.white,
-                    filled: true,
-                  ),
-                  value: _selectedCategory,
-                  items: _categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category),
+              // 🔍 Search bar
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Search resources...',
+                  prefixIcon: Icon(Icons.search),
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+                onChanged: (value) {
+                  setState(() => _searchText = value.toLowerCase());
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // State dropdown
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Select a state',
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+                value: _selectedState,
+                items: _states
+                    .map((state) =>
+                    DropdownMenuItem(value: state, child: Text(state)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedState = value;
+                    _selectedCity = null;
+                  });
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // City dropdown
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Select a city',
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+                value: _selectedCity,
+                items: (_cities[_selectedState] ?? [])
+                    .map((city) =>
+                    DropdownMenuItem(value: city, child: Text(city)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => _selectedCity = value);
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Category dropdown
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Select a category',
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+                value: _selectedCategory,
+                items: _categories
+                    .map((category) => DropdownMenuItem(
+                  value: category,
+                  child: Text(category),
+                ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() => _selectedCategory = value);
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // Firestore results
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('resources')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Center(
+                      child: Text(
+                        'Error loading resources',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedCategory = value);
-                  },
-                ),
-                const SizedBox(height: 24),
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                // Firestore Results List
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('resources')
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text('Error loading resources');
-                    }
-                    if (!snapshot.hasData) {
-                      return const CircularProgressIndicator();
-                    }
+                  final docs = snapshot.data!.docs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final name =
+                        data['name']?.toString().toLowerCase() ?? '';
+                    final state =
+                        data['state']?.toString().toLowerCase() ?? '';
+                    final city =
+                        data['city']?.toString().toLowerCase() ?? '';
+                    final category =
+                        data['category']?.toString().toLowerCase() ?? '';
 
-                    final docs = snapshot.data!.docs.where((doc) {
-                      final data = doc.data() as Map<String, dynamic>;
-                      final name = data['name']?.toString().toLowerCase() ?? '';
-                      final state =
-                          data['state']?.toString().toLowerCase() ?? '';
-                      final city = data['city']?.toString().toLowerCase() ?? '';
-                      final category =
-                          data['category']?.toString().toLowerCase() ?? '';
+                    return name.contains(_searchText) &&
+                        (_selectedState == null ||
+                            state == _selectedState!.toLowerCase()) &&
+                        (_selectedCity == null ||
+                            city == _selectedCity!.toLowerCase()) &&
+                        (_selectedCategory == null ||
+                            category == _selectedCategory!.toLowerCase());
+                  }).toList();
 
-                      return name.contains(_searchText) &&
-                          (_selectedState == null ||
-                              state == _selectedState!.toLowerCase()) &&
-                          (_selectedCity == null ||
-                              city == _selectedCity!.toLowerCase()) &&
-                          (_selectedCategory == null ||
-                              category == _selectedCategory!.toLowerCase());
-                    }).toList();
+                  if (docs.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No resources found',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }
 
-                    if (docs.isEmpty) {
-                      return const Text('No resources found');
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: docs.length,
-                      itemBuilder: (context, index) {
-                        final resource = docs[index];
-                        final data = resource.data() as Map<String, dynamic>;
-                        return ListTile(
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      final resource = docs[index];
+                      final data = resource.data() as Map<String, dynamic>;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: ListTile(
+                          tileColor: Colors.white,
                           title: Text(data['name'] ?? 'No Name'),
                           subtitle: Text(
                             '${data['city']}, ${data['state']} - ${data['category']}',
@@ -199,13 +219,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                             },
                           ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
